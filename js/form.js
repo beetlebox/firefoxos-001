@@ -2,12 +2,19 @@
 
 $(function() {
   $('#add-event-button').click(function() {
-    user.checkToken(function(status) {
-      if(status) {
+    user.checkLogin(function(status) {
+      if(status == 'ok') {
         navigation.go('view-event-add','popup');        
       }
+      else if(status == 'no_name') {
+        user.showRegister(function() {
+          navigation.go('view-event-add','popup');
+        })
+      }
       else {
-        user.showLogin();
+        user.showLogin(function() {
+          navigation.go('view-event-add','popup');
+        });
       }
     })
   });
@@ -48,4 +55,63 @@ $(function() {
     $(this).siblings('input,textarea').val('');
     e.preventDefault();
   });
+  
+  
+  /* Profile */
+  $('#firstname, #lastname').keyup(function() {
+    if($('#firstname').val() != '' && $('#lastname').val() != '') {
+      $('#submit-profile').removeAttr('disabled');
+    }
+    else {
+      $('#submit-profile').attr('disabled','disabled');
+    }
+  });
+  
+  $('#submit-profile').click(function() {
+    $('#submit-profile-button').trigger('click');
+  });
+  
+  $('#profile-form').submit(function(e) {
+    $('#submit-profile').text('Saving').attr('disabled','disabled')
+    user.setProfile({
+      firstname: $('#firstname').val(),
+      lastname: $('#lastname').val(),
+      bio: $('#bio').val()
+    }, function(resp) {
+      if(resp == true) {
+        $('#submit-profile-button').text('Save').removeAttr('disabled');
+      }
+      else {
+        showLogin();
+      }
+    }) 
+    e.preventDefault();
+  });
+  
+  /* Register */
+  $('#register-firstname, #register-lastname').keyup(function() {
+    if($('#register-firstname').val() != '' && $('#register-lastname').val() != '') {
+      $('#submit-register').removeAttr('disabled');
+    }
+    else {
+      $('#submit-register').attr('disabled','disabled');
+    }
+  });
+  
+  $('#submit-register').click(function() {
+    $('#submit-register-button').trigger('click');
+  });
+  
+  $('#register-form').submit(function(e) {
+    e.preventDefault();
+    $('#submit-register').text('Sending').attr('disabled','disabled')
+    user.setProfile({
+      firstname: $('#register-firstname').val(),
+      lastname: $('#register-lastname').val()
+    },
+    function(resp) {
+      $('#submit-register').text('Submit').removeAttr('disabled');
+      user.hideRegister(true);
+    }) 
+  })
 })
