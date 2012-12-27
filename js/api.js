@@ -56,11 +56,20 @@ this.api = (function() {
     })
   }
   
+  function updateProfile(data, callback) {
+    $.post(APIURL+'user/update', data, function(resp) {
+      if(callback && typeof callback === "function") {
+        callback(resp.status);
+      }
+    })
+  }
+  
   return {
     items: items,
     detail: detail,
     add: add,
-    exchangeToken: exchangeToken
+    exchangeToken: exchangeToken,
+    updateProfile: updateProfile
   }
   
 }());
