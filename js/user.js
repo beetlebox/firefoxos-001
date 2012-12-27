@@ -2,23 +2,34 @@
 
 this.user = (function() {
   var openLogin = false;
+  var openRegister = false;
+  var nextDo;
+  var currentToken;
   
-  function checkToken(callback) {
+  function checkLogin(callback) {
+    var status;
+    
     model.get(1,'user',function(data) {
       if(data.token && data.token_expires && data.token_exchange) {
         if(data.token_expires > Math.ceil(new Date().getTime() / 1000)) {
-          var status = true;
+          currentToken = data.token;          
+          if(data.firstname && data.lastname) {
+            status = 'ok';
+          }
+          else {
+            status = 'no_name';
+          }
         }
         else {
           exchangeToken(data, function(resp) {
             if(!resp) {
-              var status = false;
+              status = 'failed_exchange_token';
             }
           });
         }
       }
       else {
-        var status = false;
+        status = 'no_user'
       }
       
       if(callback && typeof callback === "function") {
@@ -27,16 +38,46 @@ this.user = (function() {
     })
   }
   
-  function showLogin() {
+  function showLogin(next) {
     navigation.go('view-login','popup');
-    openLogin = true; 
+    openLogin = true;
+    if(next && typeof next === "function") {
+      nextDo = next;
+    }
     return true;
   }
   
-  function hideLogin() {
-    if(openLogin()) {
+  function hideLogin(executeNext) {
+    if(openLogin) {
       navigation.back();
       openLogin = false;
+      if(nextDo && executeNext) {
+        nextDo();
+        nextDo = null;
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  function showRegister(next) {
+    hideLogin();
+    navigation.go('view-register','popup');
+    openRegister = true;
+    if(next && typeof next === "function") {
+      nextDo = next;
+    }
+    return true;
+  }
+  
+  function hideRegister(executeNext) {
+    if(openRegister) {
+      navigation.back();
+      openRegister = false;
+      if(nextDo && executeNext) {
+        nextDo();
+        nextDo = null;
+      }
       return true;
     }
     return false;
@@ -72,23 +113,56 @@ this.user = (function() {
     });
   }
   
-  function update(firstname,lastname) {
-    checkToken(function() {
-      $.post(API+'user/update',{ firstname: firstname, lastname: lastname }, function(resp) {
-        if(!resp.status) {
-          if(resp.message.toLowerCase() == 'invalid or expired token') {
-            showLogin();
-          }
-        }
-      })      
+  function setProfile(option, callback) {
+    checkLogin(function(resp) {
+      if(resp == 'no_user') {
+        showLogin();
+        return false;
+      } 
+      
+      var data = {
+        firstname: '',
+        lastname: '',
+        bio: '',
+        token: currentToken
+      }
+
+      $.extend(data,option);
+          
+      api.updateProfile(data, function(resp) {
+        model.get(1,'user',function(datadb) {
+          $.extend(datadb,option);
+          model.set(datadb,'user', function() {
+            if(callback && typeof callback === "function") {
+              callback(resp);
+            }          
+          })          
+        })
+      })
     })
   }
   
+  function getProfile() {
+    model.get(1,'user',function(data) {
+      if(data.firstname && data.lastname) {
+        $('#firstname').val(data.firstname);
+        $('#lastname').val(data.lastname);
+        $('#submit-profile').removeAttr('disabled');
+      }
+      
+      $('#bio').val(data.bio);
+    })
+  }
+   
   return {
-    checkToken: checkToken,
+    checkLogin: checkLogin,
     showLogin: showLogin,
     hideLogin: hideLogin,
-    setLogged: setLogged
+    setLogged: setLogged,
+    showRegister: showRegister,
+    hideRegister: hideRegister,
+    setProfile: setProfile,
+    getProfile: getProfile
   };
 }());
 
@@ -97,10 +171,11 @@ window.onmessage = function(event) {
     if(event.data.status == true) {
       user.setLogged(event.data.results, function() {
         if(event.data.action == 'input/name') {
-          window.location.hash = '#profile';          
+          user.showRegister();          
         }
-        
-        hideLogin();          
+        else {
+          user.hideLogin(true);
+        }          
       });
     }
     else {
