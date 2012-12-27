@@ -165,30 +165,35 @@
   	      <div role="tabpanel">
 						
 						<!-- Profile Section -->
-						<section id="view-profile" role="region" class="view section active" data-mirror="mirror-profile">
+            <section id="view-profile" role="region" class="view section" data-mirror="mirror-profile">
               <header>
+                <button id="cancel-profile" class="cancel-navigation negative"><span class="icon icon-close">Exit</span></button>
                 <menu type="toolbar">
                   <button id="submit-profile" role="menuitem" disabled>Save</button>
                 </menu>
                 <h1>Profile</h1>
-              </header> 
-
-							<article class="body padding">
-							 <div class="inner">
-	               <form id="event-form" action="#" class="full">
-                  <p>
-                   <input data-cancelable placeholder="First Name" name="firstname" class="textfield" type="text" x-inputmode="latin-prose" value="" id="firstname" required="required">
-           	       <button type="reset">Clear</button>
-                  </p>
-
-                  <p>
-                   <input data-cancelable placeholder="Last Name" name="lastname" class="textfield" type="text" x-inputmode="latin-prose" value="" id="lastname" required="required">
-           	       <button type="reset">Clear</button>
-                  </p> 
-								 </form>
-							 </div>
-							</article> 
-						</section>
+              </header>   
+  
+              <article class="body full padding">
+               <div class="inner">
+                 <form id="profile-form" action="#" class="full">
+                   <p>
+                     <input data-cancelable placeholder="First Name" name="firstname" class="textfield" type="text" x-inputmode="latin-prose" value="" id="firstname" required="required">
+            	       <button type="reset">Clear</button>
+                   </p>
+                   <p>
+                     <input data-cancelable placeholder="Last Name" name="lastname" class="textfield" type="text" x-inputmode="latin-prose" value="" id="lastname" required="required">
+            	       <button type="reset">Clear</button>
+                   </p>
+                   <p>
+            	       <textarea placeholder="Bio" id="bio"></textarea>
+                     <button type="reset">Clear</button>
+                   </p>
+                    <input type="submit" style="display:none" id="submit-profile-button"> 
+                 </form>
+               </div>
+              </article>
+            </section>
 						
   	      </div>
   	    </li>
@@ -211,6 +216,33 @@
 					<iframe src="http://localhost/projecte/api/iframe/persona" mozbrowser></iframe>
 				</article>
 			</section>
+			
+			<!-- Register Section -->
+			<section id="view-register" role="region" class="view transition transition-bottom" data-mirror="mirror-register">
+			   <header>
+	         <button id="cancel-register" class="cancel-navigation negative"><span class="icon icon-close">Exit</span></button>
+	         <menu type="toolbar">
+	           <button id="submit-register" role="menuitem" disabled>Submit</button>
+	         </menu>
+	         <h1>Register</h1>
+	       </header> 
+
+				<article class="body full padding">
+          <div class="inner">
+            <form id="register-form" action="#" class="full">
+              <p>
+                <input data-cancelable placeholder="First Name" name="firstname" class="textfield" type="text" x-inputmode="latin-prose" value="" id="register-firstname" required="required">
+       	       <button type="reset">Clear</button>
+              </p>
+              <p>
+                <input data-cancelable placeholder="Last Name" name="lastname" class="textfield" type="text" x-inputmode="latin-prose" value="" id="register-lastname" required="required">
+       	       <button type="reset">Clear</button>
+              </p>
+               <input type="submit" style="display:none" id="submit-register-button"> 
+            </form>
+          </div>
+				</article>
+			</section>
 	  </div>
 	  
 	  <div class="cache" id="cache">
@@ -218,7 +250,8 @@
 	    <div id="mirror-event-add" class="view" style="background-image: -moz-element(#view-event-add);"></div>
 			<div id="mirror-event-latlong-add" class="view" style="background-image: -moz-element(#view-event-latlong-add);"></div>
 			<div id="mirror-profile" class="view" style="background-image: -moz-element(#view-profile);"></div> 
-			<div id="mirror-login" class="view" style="background-image: -moz-element(#view-login);"></div> 
+			<div id="mirror-login" class="view" style="background-image: -moz-element(#view-login);"></div>
+			<div id="mirror-register" class="view" style="background-image: -moz-element(#view-register);"></div> 
 	  </div>
 
   </body>
