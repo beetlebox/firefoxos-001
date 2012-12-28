@@ -21,7 +21,7 @@ $(function() {
   })
   
   $(window).on('profile', function() {
-    
+    user.getProfile();
   }); 
   
 })
