@@ -64,12 +64,23 @@ this.api = (function() {
     })
   }
   
+  function venuesearch(query,callback) {
+    $.get(APIURL+'venue/search?q='+query, function(resp) {
+      if(resp.status == true) {
+        if(callback && typeof callback === "function") {
+          callback(resp.results);
+        }
+      }
+    })
+  }
+  
   return {
     items: items,
     detail: detail,
     add: add,
     exchangeToken: exchangeToken,
-    updateProfile: updateProfile
+    updateProfile: updateProfile,
+    venuesearch: venuesearch
   }
   
 }());
