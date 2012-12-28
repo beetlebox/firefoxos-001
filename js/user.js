@@ -86,7 +86,7 @@ this.user = (function() {
   function setLogged(data, callback) {
     var insert = { id: 1 };
     $.extend(insert,data);
- 
+    
     model.set(insert,'user',function() {
       if(callback && typeof callback === "function") {
         callback();
@@ -99,11 +99,14 @@ this.user = (function() {
     
     api.exchangeToken(data.token, data.token_exchange, function(resp) {
       if(resp) {
-        setLogged(resp, function() {
-          if(callback && typeof callback === "function") {
-            callback(true);
-          }
-        })
+        model.get(1,'user',function(datadb) {
+          $.extend(datadb,resp);
+          model.set(datadb,'user',function() {
+            if(callback && typeof callback === "function") {
+              callback(true);
+            }            
+          })
+        });
       }
       else {
         if(callback && typeof callback === "function") {
