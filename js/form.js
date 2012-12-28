@@ -1,6 +1,14 @@
 /* -*- Mode: JavaScript; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */ 
 
 $(function() {
+  /* General */ 
+  $('.view[data-state="active"] [required]').keyup(function() {
+    if($(this).val()) {
+      $('.submit-button').removeAttr('disabled');      
+    }
+  });
+  
+  /* Add Event Form */
   $('#add-event-button').click(function() {
     user.checkLogin(function(status) {
       if(status == 'ok') {
@@ -24,6 +32,10 @@ $(function() {
     if($(this).attr('id') == 'cancel-add') {
       events.clearAllForm();
     }
+  });
+  
+  $('#location-name').focus(function() {
+    navigation.go('view-event-search-location','popup');
   }); 
   
   $('#location-latlong').focus(function() {
@@ -56,6 +68,23 @@ $(function() {
     e.preventDefault();
   });
   
+  $('#search-location-text').keyup($.debounce( function() {
+    api.venuesearch($(this).val(), function(data) {
+      $('#search-location-result li:not([data-template])').each(function() {
+        $(this).remove();
+      });
+      
+      var template = $('#search-location-result').find('[data-template]');
+      $.each(data, function() {
+        template.clone()
+        .removeAttr('data-template')
+        .find('a').attr('data-id',this.id).attr('data-latitude',this.latitude).attr('data-longitude',this.longitude)
+        .find("p:contains('#name#')").text(this.name)
+        .find("p:contains('#location#')").text(this.location)
+      })
+    });
+  }, 300));
+  
   
   /* Profile */
   $('#firstname, #lastname').keyup(function() {
@@ -79,10 +108,10 @@ $(function() {
       bio: $('#bio').val()
     }, function(resp) {
       if(resp == true) {
-        $('#submit-profile-button').text('Save').removeAttr('disabled');
+        $('#submit-profile').text('Save').removeAttr('disabled');
       }
       else {
-        showLogin();
+        user.showLogin();
       }
     }) 
     e.preventDefault();
@@ -107,11 +136,12 @@ $(function() {
     $('#submit-register').text('Sending').attr('disabled','disabled')
     user.setProfile({
       firstname: $('#register-firstname').val(),
-      lastname: $('#register-lastname').val()
+      lastname: $('#register-lastname').val(),
+      active: true
     },
     function(resp) {
       $('#submit-register').text('Submit').removeAttr('disabled');
       user.hideRegister(true);
     }) 
-  })
+  });
 })
