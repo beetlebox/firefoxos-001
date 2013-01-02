@@ -34,13 +34,15 @@ $(function() {
     }
   });
   
-  $('#location-name').focus(function() {
+  $('#location-name').click(function(e) {
     navigation.go('view-event-search-location','popup');
+    e.preventDefault();
   }); 
   
   $('#location-latlong').focus(function() {
     navigation.go('view-event-latlong-add','popup');
-    map.openMap($('#location-name').val());
+    var q = $('#location-latlong').val() ? $('#location-latlong').val() : $('#location-name').val();
+    map.openMap(q);
     $('#submit-latlong-event').removeAttr('disabled'); 
   });
   
@@ -69,22 +71,50 @@ $(function() {
   });
   
   $('#search-location-text').keyup($.debounce( function() {
+    if($(this).val() == '') return false;
+     
+    $('#search-location-result').find('p.no-result').hide();       
+    $('#search-location-result').find('p.loading').show();
+         
     api.venuesearch($(this).val(), function(data) {
       $('#search-location-result li:not([data-template])').each(function() {
         $(this).remove();
       });
       
+      $('#search-location-result').find('p.loading').hide();
+      
+      if(data == false) {
+        $('#search-location-result').find('p.no-result').show();
+        return false;
+      } 
+            
       var template = $('#search-location-result').find('[data-template]');
+
       $.each(data, function() {
-        template.clone()
+        template.clone().appendTo('#search-location-result')
         .removeAttr('data-template')
-        .find('a').attr('data-id',this.id).attr('data-latitude',this.latitude).attr('data-longitude',this.longitude)
-        .find("p:contains('#name#')").text(this.name)
-        .find("p:contains('#location#')").text(this.location)
+        .find('a').attr('data-id',this.id).attr('data-name',this.name).attr('data-latitude',this.latitude).attr('data-longitude',this.longitude).addClass('select-venue')
+        .find("p.name").text(this.name)
+        .siblings("p.location").text(this.location)
       })
     });
-  }, 300));
+  }, 500));
   
+  $(document).on('click','.select-venue',function(e) {
+    $('#venueid').val($(this).attr('data-id'));
+    $('#location-name').text($(this).attr('data-name'));
+    navigation.back();
+    e.preventDefault();
+  });
+  
+  $('#add-location-link').click(function() {
+    navigation.back();
+    navigation.popup('view-event-add-location');
+  })
+  
+  $('#add-location-form').submit(function(e) {
+    e.preventDefault();
+  })
   
   /* Profile */
   $('#firstname, #lastname').keyup(function() {

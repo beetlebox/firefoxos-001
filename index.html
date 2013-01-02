@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="shared/style_unstable/lists.css">
     <link rel="stylesheet" href="shared/style_unstable/tabs.css">
     <link rel="stylesheet" href="shared/style/input_areas.css">
+    <link rel="stylesheet" href="shared/style_unstable/progress_activity.css">
+    <link rel="stylesheet" href="shared/style/buttons.css"> 
 		<link rel="stylesheet" href="style/fonts.css">
 		<link rel="stylesheet" href="style/icons.css">
     <link rel="stylesheet" href="style/app.css">
@@ -78,14 +80,23 @@
               <article class="body full padding">
                <div class="inner">
                  <form id="event-form" action="#" class="full">
-                   <p>
-                     <input data-cancelable placeholder="Event Name" name="name" class="textfield" type="text" x-inputmode="latin-prose" value="" id="name" required="required">
-            	       <button type="reset">Clear</button>
-                   </p>
-                   <p>
-            	       <textarea placeholder="Description" required="required"></textarea>
-                     <button type="reset">Clear</button>
-                   </p>
+                  <p>
+                    <input data-cancelable placeholder="Event Name" name="name" class="textfield" type="text" x-inputmode="latin-prose" value="" id="name" required="required">
+                    <button type="reset">Clear</button>
+                  </p>
+                  <p>
+                    <textarea placeholder="Description" required="required"></textarea>
+                    <button type="reset">Clear</button>
+                  </p> 
+                  <p>
+                    <button class="icon icon-view" id="location-name">Venue Name</button>
+                    <input type="hidden" name="venueid" id="venueid">
+                    <input type="hidden" name="venuename" id="venuename">
+                    <input type="hidden" name="venueaddress" id="venueaddress">
+                    <input type="hidden" name="venuelatitude" id="venuelatitude">
+                    <input type="hidden" name="venuelongitude" id="venuelongitude">
+                  <button type="reset">Clear</button>
+                  </p>
                    <fieldset>
             	       <legend>Start</legend>
             	       <section>
@@ -111,21 +122,7 @@
             			        <button type="reset">Clear</button>
             		        </p>
                       </section>
-                    </fieldset>
-
-                    <fieldset>
-            	        <legend>Place</legend>
-            	        <section>
-                    		<p>
-            			        <input data-cancelable placeholder="Name or Address" name="location-name" class="textfield" type="text" x-inputmode="latin-prose" value="" id="location-name" required="required">
-            			        <button type="reset">Clear</button>
-            		        </p>
-            		        <p>
-            			        <input data-cancelable placeholder="Latitude and Longitude" name="location-latlong" class="textfield" type="text" x-inputmode="latin-prose" value="" id="location-latlong" required="required">
-            			        <button type="reset">Clear</button>
-            		        </p>
-                      </section>
-                    </fieldset>
+                    </fieldset> 
                     <input type="submit" style="display:none" id="submit-event-button"> 
                  </form>
                </div>
@@ -138,7 +135,7 @@
 				         <button id="cancel-search-location" class="cancel-navigation negative"><span class="icon icon-close">Exit</span></button>
 				         <menu type="toolbar">
 				         </menu>
-				         <h1>Place</h1>
+				         <h1>Venue</h1>
 				       </header> 
 
 							<article class="body full">
@@ -149,15 +146,50 @@
 						      </p>
 						    </form>
 								<section data-type="list" id="search-location-result">
+									<p role="status" class="loading">
+						        <progress class="small"></progress>
+						         <span>Searching...</span>
+						      </p>
+									<p role="status" class="no-result">
+						         <span>No results</span>
+						      </p>
                   <ul>
                     <li data-template>
                       <a href="#">
-                        <p>#name#</p>
-                        <p>#location#</p>
+                        <p class="name">#name#</p>
+                        <p class="location">#location#</p>
                       </a>
                     </li>
                   </ul>  
                 </section>
+							</article>
+						</section>
+						
+						<!-- Add Location Section -->
+						<section id="view-event-add-location" role="region" class="view transition transition-bottom" data-mirror="mirror-event-add-location">
+						   <header>
+				         <button id="cancel-add-location" class="cancel-navigation negative"><span class="icon icon-close">Exit</span></button>
+				         <menu type="toolbar">
+				         </menu>
+				         <h1>Add Venue</h1>
+				       </header> 
+
+							<article class="body full">
+		            <form id="add-location-form" action="#" class="full">
+		              <p>
+		               	<input data-cancelable placeholder="Venue Name" name="addvenuename" class="textfield" type="text" x-inputmode="latin-prose" value="" id="add-location-name" required="required">
+		       	       	<button type="reset">Clear</button>
+		              </p>
+		              <p>
+		               	<input data-cancelable placeholder="Address" name="addvenueaddress" class="textfield" type="text" x-inputmode="latin-prose" value="" id="add-location-address" required="required">
+		       	       	<button type="reset">Clear</button>
+		              </p>
+		              <p>
+		               	<input data-cancelable placeholder="Latitude and Longitude" name="addvenuealatlong" class="textfield" type="text" x-inputmode="latin-prose" value="" id="add-location-latlong" required="required">
+		       	       	<button type="reset">Clear</button>
+		              </p>
+		              <input type="submit" style="display:none" id="submit-add-location-button"> 
+		            </form>
 							</article>
 						</section> 
 
@@ -168,7 +200,7 @@
 				         <menu type="toolbar">
 				           <button id="submit-latlong-event" role="menuitem" disabled>Done</button>
 				         </menu>
-				         <h1>Place</h1>
+				         <h1>Venue Map</h1>
 				       </header> 
 
 							<article class="body full">
@@ -282,7 +314,8 @@
 			<div id="mirror-profile" class="view" style="background-image: -moz-element(#view-profile);"></div> 
 			<div id="mirror-login" class="view" style="background-image: -moz-element(#view-login);"></div>
 			<div id="mirror-register" class="view" style="background-image: -moz-element(#view-register);"></div>
-			<div id="mirror-event-search-location" class="view" style="background-image: -moz-element(#view-event-search-location);"></div> 
+			<div id="mirror-event-search-location" class="view" style="background-image: -moz-element(#view-event-search-location);"></div>
+			<div id="mirror-event-add-location" class="view" style="background-image: -moz-element(#view-event-add-location);"></div> 
 	  </div>
 
   </body>
