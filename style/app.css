@@ -24,6 +24,11 @@ img[alt="placeholder"] {
   background-size: 100% 100%;
   font-size: 0; }
 
+/* Progress Bar */
+p[role="status"] {
+  text-align: center;
+  display: none; }
+
 /* View */
 .view, .cache {
   position: fixed;

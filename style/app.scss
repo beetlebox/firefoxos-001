@@ -34,6 +34,12 @@ img {
   }
 }
 
+/* Progress Bar */
+p[role="status"] {
+  text-align: center;
+  display: none;
+}
+
 /* View */
 .view,.cache {
   position: fixed;
