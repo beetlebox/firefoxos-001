@@ -50,7 +50,7 @@ this.api = (function() {
         ret = resp.results;
       }
       
-      if(callback && typeof callback === "function") {
+      if($.isFunction(callback)) {
         callback(ret);
       }
     })
@@ -58,19 +58,27 @@ this.api = (function() {
   
   function updateProfile(data, callback) {
     $.post(APIURL+'user/update', data, function(resp) {
-      if(callback && typeof callback === "function") {
+      if($.isFunction(callback)) {
         callback(resp.status);
       }
     })
   }
   
   function venuesearch(query,callback) {
-    $.get(APIURL+'venue/search?q='+query, function(resp) {
-      if(resp.status == true) {
-        if(callback && typeof callback === "function") {
-          callback(resp.results);
+    $.ajax({
+      url: APIURL+'venue/search?q='+query,
+      success: function(resp) {
+        if(resp.status == true) {
+          if($.isFunction(callback)) {
+            callback(resp.results);
+          }
         }
-      }
+      },
+      error: function() {
+        if($.isFunction(callback)) {
+          callback(false);
+        }
+      }  
     })
   }
   
