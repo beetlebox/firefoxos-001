@@ -32,7 +32,7 @@ this.user = (function() {
         status = 'no_user'
       }
       
-      if(callback && typeof callback === "function") {
+      if($.isFunction(callback)) {
         callback(status);
       }
     })
@@ -88,7 +88,7 @@ this.user = (function() {
     $.extend(insert,data);
     
     model.set(insert,'user',function() {
-      if(callback && typeof callback === "function") {
+      if($.isFunction(callback)) {
         callback();
       }
     }) 
@@ -102,14 +102,14 @@ this.user = (function() {
         model.get(1,'user',function(datadb) {
           $.extend(datadb,resp);
           model.set(datadb,'user',function() {
-            if(callback && typeof callback === "function") {
+            if($.isFunction(callback)) {
               callback(true);
             }            
           })
         });
       }
       else {
-        if(callback && typeof callback === "function") {
+        if($.isFunction(callback)) {
           callback(false);
         }        
       }
@@ -136,7 +136,7 @@ this.user = (function() {
         model.get(1,'user',function(datadb) {
           $.extend(datadb,option);
           model.set(datadb,'user', function() {
-            if(callback && typeof callback === "function") {
+            if($.isFunction(callback)) {
               callback(resp);
             }          
           })          
