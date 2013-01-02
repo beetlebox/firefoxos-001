@@ -75,6 +75,14 @@ var map = {
     });
   },
   
+  getLatitude: function() {
+    return this.markerlat;
+  },
+  
+  getLongitude: function() {
+    return this.markerlng;
+  },
+  
   getMarker: function() {
     if(this.markerlat && this.markerlng)
       return this.markerlat+','+this.markerlng;
