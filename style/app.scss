@@ -34,6 +34,13 @@ img {
   }
 }
 
+/* Form Search Button */ 
+form[role="search"] button[type="submit"] {
+  width: auto;
+  height: inherit;
+  margin: 0;
+}
+
 /* Progress Bar */
 p[role="status"] {
   text-align: center;
@@ -51,6 +58,10 @@ p[role="status"] {
   &[data-state="active"] {
     z-index: 100;
   }
+}
+
+#app {
+  z-index: 1;
 } 
 
 .view {

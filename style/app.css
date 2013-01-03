@@ -24,6 +24,12 @@ img[alt="placeholder"] {
   background-size: 100% 100%;
   font-size: 0; }
 
+/* Form Search Button */
+form[role="search"] button[type="submit"] {
+  width: auto;
+  height: inherit;
+  margin: 0; }
+
 /* Progress Bar */
 p[role="status"] {
   text-align: center;
@@ -38,6 +44,9 @@ p[role="status"] {
   height: 100%; }
   .view[data-state="active"], .cache[data-state="active"] {
     z-index: 100; }
+
+#app {
+  z-index: 1; }
 
 .view .body {
   position: relative;
