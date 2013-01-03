@@ -39,13 +39,12 @@ this.events = (function() {
     })
   }
   
-  function show_list_grouping(data) {
-    removeComment($('#event-list'));
-    
+  function show_list_grouping(data) {    
     $.each(data, function() {
       var group = groupingdate(this.start);
+      var groupid = group.toLowerCase().replace(' ','');
       
-      if($('#'+group).length == 0 ) {
+      if($('#'+group).length == 0) {
         $('<header />', {text: group}).appendTo('#event-list-content');
         $('<ul />', {id: group}).appendTo('#event-list-content');
       }
