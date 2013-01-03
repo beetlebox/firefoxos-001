@@ -19,21 +19,31 @@ this.user = (function() {
           else {
             status = 'no_name';
           }
+          
+          if($.isFunction(callback)) {
+            callback(status,currentToken);
+          }
         }
         else {
           exchangeToken(data, function(resp) {
-            if(!resp) {
+            if(resp) {
+              status = 'ok';
+              currentToken = resp.token
+            }
+            else {
               status = 'failed_exchange_token';
             }
+             
+            if($.isFunction(callback)) {
+              callback(status,currentToken);
+            } 
           });
         }
       }
       else {
-        status = 'no_user'
-      }
-      
-      if($.isFunction(callback)) {
-        callback(status);
+        if($.isFunction(callback)) {
+          callback('no_user');
+        }
       }
     })
   }
@@ -103,7 +113,7 @@ this.user = (function() {
           $.extend(datadb,resp);
           model.set(datadb,'user',function() {
             if($.isFunction(callback)) {
-              callback(true);
+              callback(resp.token);
             }            
           })
         });
