@@ -135,6 +135,7 @@ function navigationStack(currentView) {
     var currentMirror = document.getElementById(current.dataset.mirror);
     next.classList.remove('transition-bottom');
     next.addEventListener('transitionend', function hideView() {
+      current.dataset.state = 'inactive';      
       currentMirror.style.display = 'none';
       nextMirror.classList.remove('transition-bottom');
       next.removeEventListener('transitionend', hideView);
@@ -148,6 +149,7 @@ function navigationStack(currentView) {
     var currentMirror = document.getElementById(current.dataset.mirror);
     nextMirror.style.display = '';
     current.addEventListener('transitionend', function hideView() {
+      current.dataset.state = 'inactive'; 
       currentMirror.classList.add('transition-bottom');
       if (typeof callback === 'function') {
         setTimeout(callback, 0);
