@@ -29,7 +29,7 @@
     <script type="application/javascript" src="js/form.js"></script>  
   </head>
   <body role="application">
-    <div id="app" class="view" data-state="active">
+    <div id="app" class="view">
   	  <ul role="tablist" data-items="3" class="bottom">
         <!-- Event -->
   	    <li id="event" role="tab">
@@ -48,16 +48,16 @@
               <article class="body">
                 <div class="inner">
                   <section data-type="list">
-                    <div id="template-event-list">
-                      <header>#group-title#</header>
+                    <div id="template-event-list" data-template>
+                      <header></header>
                       <ul>
                         <li>
                           <aside class="pack-end">
-                            <img alt="placeholder" src="#image#">
+                            <img alt="placeholder" src="">
                           </aside>
                           <a href="#">
-                            <p>#title#</p>
-                            <p>#location#</p>
+                            <p class="title"></p>
+                            <p class="location"></p>
                           </a>
                         </li>
                       </ul>
@@ -85,11 +85,12 @@
                     <button type="reset">Clear</button>
                   </p>
                   <p>
-                    <textarea placeholder="Description" required="required"></textarea>
+                    <textarea placeholder="Description" required="required" id="description"></textarea>
                     <button type="reset">Clear</button>
                   </p> 
                   <p>
-                    <button class="icon icon-view" id="location-name">Venue Name</button>
+                    <button class="icon icon-dialog" id="location-name" style="margin-bottom: 0">Venue Name</button>
+                    <input type="text" name="location-name" id="location-name-hidden" required style="visibility: hidden; height: 0">
                     <input type="hidden" name="venueid" id="venueid">
                     <input type="hidden" name="venuename" id="venuename">
                     <input type="hidden" name="venueaddress" id="venueaddress">
@@ -151,7 +152,7 @@
 						         <span>Searching...</span>
 						      </p>
 									<p role="status" class="no-result">
-						         <span>No results</span>
+						         <span>No results<br /><br /><button class="recommend" id="add-location-link">Add New</button></span>
 						      </p>
                   <ul>
                     <li data-template>
@@ -169,12 +170,13 @@
 						<section id="view-event-add-location" role="region" class="view transition transition-bottom" data-mirror="mirror-event-add-location">
 						   <header>
 				         <button id="cancel-add-location" class="cancel-navigation negative"><span class="icon icon-close">Exit</span></button>
-				         <menu type="toolbar">
-				         </menu>
+                <menu type="toolbar">
+                  <button id="submit-add-location" class="submit-button" role="menuitem" disabled>Done</button>
+                </menu>  
 				         <h1>Add Venue</h1>
 				       </header> 
 
-							<article class="body full">
+							<article class="body full padding">
 		            <form id="add-location-form" action="#" class="full">
 		              <p>
 		               	<input data-cancelable placeholder="Venue Name" name="addvenuename" class="textfield" type="text" x-inputmode="latin-prose" value="" id="add-location-name" required="required">
@@ -185,8 +187,7 @@
 		       	       	<button type="reset">Clear</button>
 		              </p>
 		              <p>
-		               	<input data-cancelable placeholder="Latitude and Longitude" name="addvenuealatlong" class="textfield" type="text" x-inputmode="latin-prose" value="" id="add-location-latlong" required="required">
-		       	       	<button type="reset">Clear</button>
+		                <button class="icon icon-dialog" id="add-location-latlong">Latitude and Longitude</button>
 		              </p>
 		              <input type="submit" style="display:none" id="submit-add-location-button"> 
 		            </form>
