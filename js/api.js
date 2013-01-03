@@ -28,18 +28,30 @@ this.api = (function() {
     });
   }
   
-  function add(data) {
+  function addEvent(form,callback) {
     var def = {
       title: '',
       description: '',
       startdate: '',
       enddate: '',
-      volunteer: 1
+      venueid: '',
+      venuename: '',
+      venuelocation: '',
+      venuelatitude: '',
+      venuelongitude: '',
+      volunteer: '1',
+      token: ''
     }
+
+    var data = $.extend(def,form);
     
-    $.post(APIURL+'event/add', data, function() {
-      
-    })
+    $.post(APIURL+'event/add', data, function(resp) {
+      if(resp.status) {
+        if($.isFunction(callback)) {
+          callback(resp.results);
+        } 
+      }
+    }) 
   }
   
   function exchangeToken(token,token_exchange,callback) {
@@ -85,7 +97,7 @@ this.api = (function() {
   return {
     items: items,
     detail: detail,
-    add: add,
+    addEvent: addEvent,
     exchangeToken: exchangeToken,
     updateProfile: updateProfile,
     venuesearch: venuesearch

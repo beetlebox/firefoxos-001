@@ -2,11 +2,25 @@
 
 $(function() {
   /* General */ 
-  $('.view[data-state="active"] [required]').keyup(function() {
-    if($(this).val()) {
-      $('.submit-button').removeAttr('disabled');      
-    }
-  });
+  $(document).on('keyup','.view[data-state="active"] [required]', $.debounce(function() {
+    var i = 0;
+    var length = $('.view[data-state="active"] [required]').length;
+    
+    $('.view[data-state="active"] [required]').each(function() {
+      if($(this).val()) {
+        i++;             
+      }
+
+      if(i == length) {
+        $('.view[data-state="active"]').find('.submit-button').removeAttr('disabled');
+      }
+      else {
+        $('.view[data-state="active"]').find('.submit-button').attr('disabled','disabled')
+      }
+    })                                             
+    
+    i = 0;
+  }, 300));
   
   /* Add Event Form */
   $('#add-event-button').click(function() {
@@ -32,23 +46,47 @@ $(function() {
     if($(this).attr('id') == 'cancel-add') {
       events.clearAllForm();
     }
+    
+    if($(this).attr('id') == 'cancel-add-location') {
+      navigation.go('view-event-search-location','popup');
+    }
   });
   
   $('#location-name').click(function(e) {
-    navigation.go('view-event-search-location','popup');
+    if($('#venuename').val() && $('#venueaddress').val()) {
+      navigation.go('view-event-add-location','popup');
+    }
+    else {
+      navigation.go('view-event-search-location','popup');
+    }
     e.preventDefault();
   }); 
   
-  $('#location-latlong').focus(function() {
+  $('#add-location-latlong').click(function(e) {
     navigation.go('view-event-latlong-add','popup');
-    var q = $('#location-latlong').val() ? $('#location-latlong').val() : $('#location-name').val();
+    var q = '';
+    $('#venueid').val('');
+    
+    if(!$('#add-location-latlong').text().match('[a-zA-Z]')) {
+      q = $('#add-location-latlong').text();
+    }                                       
+    else if($('#add-location-address').val()) {
+      q = $('#add-location-address').val();
+    }                                       
+    else {
+      q = $('#add-location-name').val();
+    }
+    
     map.openMap(q);
-    $('#submit-latlong-event').removeAttr('disabled'); 
+    $('#submit-latlong-event').removeAttr('disabled');
+    e.preventDefault(); 
   });
   
   $('#submit-latlong-event').click(function() {
     if(map.getMarker()) {
-      $('#location-latlong').val(map.getMarker());
+      $('#add-location-latlong').text(map.getMarker());
+      $('#venuelongitude').val(map.getLongitude());
+      $('#venuelatitude').val(map.getLatitude());
     }
     navigation.back();     
   });
@@ -63,6 +101,39 @@ $(function() {
   
   $('#event-form').submit(function(e) {
     e.preventDefault();
+    user.checkLogin(function(status,token) {
+      if(status == 'ok') {
+        api.addEvent({
+          title: $('#name').val(),
+          description: $('#description').val(),
+          startdate: $('#date-start').val()+' '+$('#time-start').val(),
+          enddate: $('#date-end').val()+' '+$('#time-end').val(),
+          venueid: $('#venueid').val(),
+          venuename: $('#venuename').val(),
+          venuelocation: $('#venueaddress').val(),
+          venuelatitude: $('#venuelatitude').val(),
+          venuelongitude: $('#venuelongitude').val(),
+          token: token 
+        },
+        function(resp) {
+          model.set(resp,'event', function() {
+            navigation.back(function() {
+              events.list();
+            });
+          });
+        })        
+      }
+      else if(status == 'no_name') {
+        user.showRegister(function() {
+          navigation.go('view-event-add','popup');
+        })
+      }
+      else {
+        user.showLogin(function() {
+          navigation.go('view-event-add','popup');
+        });
+      }   
+    })
   });
   
   $('button[type="reset"]').click(function(e) {
@@ -103,17 +174,31 @@ $(function() {
   $(document).on('click','.select-venue',function(e) {
     $('#venueid').val($(this).attr('data-id'));
     $('#location-name').text($(this).attr('data-name'));
-    navigation.back();
+    $('#location-name-hidden').val($(this).attr('data-name'));
+    $('#venuename,#venuelocation,#venuelatitude,#venuelongitude').val('');
+    navigation.back(function() {
+      $('#location-name-hidden').trigger('keyup');
+    });
     e.preventDefault();
   });
   
   $('#add-location-link').click(function() {
     navigation.back();
-    navigation.popup('view-event-add-location');
+    navigation.go('view-event-add-location','popup');
+  });
+  
+  $('#submit-add-location').click(function() {
+    $('#submit-add-location-button').trigger('click');
   })
   
   $('#add-location-form').submit(function(e) {
     e.preventDefault();
+    $('#venuename,#location-name-hidden').val($('#add-location-name').val());
+    $('#venueaddress').val($('#add-location-address').val());
+    $('#location-name').text($('#add-location-name').val());
+    navigation.back(function() {
+      $('#location-name-hidden').trigger('keyup');
+    });
   })
   
   /* Profile */
