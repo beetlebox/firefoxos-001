@@ -5,10 +5,9 @@ this.api = (function() {
   var APIURL = 'http://localhost/projecte/api/';
   
   function items(last,callback) {
-    $.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
     $.getJSON(APIURL+'event/list/?limit=10', function(json) {
       if(json.status == true) {
-        callback(json.result);
+        callback(json.results);
       }                
       else {
         callback(false);
@@ -17,10 +16,9 @@ this.api = (function() {
   }
   
   function detail(id,callback) {
-    $.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
     $.getJSON(APIURL+'event/detail/?id='+id, function(json) {
       if(json.status == true) {
-        callback(json.result);
+        callback(json.results);
       }                       
       else {
         callback(false);
