@@ -5,18 +5,27 @@ this.events = (function() {
   function list() {
     model.count('event',function(c) {
       if(c > 0) {
-        model.list('event',1,0,function(data) {
+        model.list('event',20,0,function(data) {
           if(data) {
             show_list_grouping(data);
+          }
+          
+          if(window.navigator.onLine) {
+            api.items('', function(data) {
+              if(data) {
+                show_list_grouping(data);
+                add(data);
+              }
+            });
           }
         })
       }
       else {
         if(window.navigator.onLine) {
-          api.items('', function(data) {
+          api.items('', function(data) {           
             if(data) {
               show_list_grouping(data);
-              //add(data);
+              add(data);
             }
           });
         }
@@ -39,19 +48,21 @@ this.events = (function() {
     })
   }
   
-  function show_list_grouping(data) {    
+  function show_list_grouping(data) {
+  
     $.each(data, function() {
       var group = groupingdate(this.start);
-      var groupid = group.toLowerCase().replace(' ','');
+      var groupid = group.toLowerCase().replace(' ','');  
       
-      if($('#'+group).length == 0) {
-        $('<header />', {text: group}).appendTo('#event-list-content');
-        $('<ul />', {id: group}).appendTo('#event-list-content');
+      if($('#'+groupid).length == 0) {
+        $('<header />', {text: group}).appendTo('#view-events-list section[data-type="list"]');
+        $('<ul />', {id: groupid}).appendTo('#view-events-list section[data-type="list"]');
       }
       
       var img = $('<img />', {'src' : this.banner, 'alt': 'placeholder'}).wrap('<aside />').parent().addClass('pack-end');
-      var link = $('<p />', {text: this.title}).wrap('<a />').parent().attr('href','#event-detail').attr('data-eventid',this.id);
-      $('<li />').append(img).append(link).appendTo('#'+group);
+      var link = $('<p />', {text: this.title, class: 'title'}); 
+      var loc = $('<p />', {text: this.venue.name, class: 'location'});
+      $('<li />').append(img).append(link).append(loc).wrapInner('<a href="#event-detail" data-eventid="'+this.id+'" />').appendTo('#'+groupid);
     })
   }
   
