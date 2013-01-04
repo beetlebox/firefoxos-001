@@ -110,7 +110,7 @@ $(function() {
           enddate: $('#date-end').val()+' '+$('#time-end').val(),
           venueid: $('#venueid').val(),
           venuename: $('#venuename').val(),
-          venuelocation: $('#venueaddress').val(),
+          venueaddress: $('#venueaddress').val(),
           venuelatitude: $('#venuelatitude').val(),
           venuelongitude: $('#venuelongitude').val(),
           token: token 
