@@ -179,6 +179,65 @@ this.user = (function() {
   };
 }());
 
+$(function() {
+  $('#firstname, #lastname').keyup(function() {
+    if($('#firstname').val() != '' && $('#lastname').val() != '') {
+      $('#submit-profile').removeAttr('disabled');
+    }
+    else {
+      $('#submit-profile').attr('disabled','disabled');
+    }
+  });
+  
+  $('#submit-profile').click(function() {
+    $('#submit-profile-button').trigger('click');
+  });
+  
+  $('#profile-form').submit(function(e) {
+    $('#submit-profile').text('Saving').attr('disabled','disabled')
+    user.setProfile({
+      firstname: $('#firstname').val(),
+      lastname: $('#lastname').val(),
+      bio: $('#bio').val()
+    }, function(resp) {
+      if(resp == true) {
+        $('#submit-profile').text('Save').removeAttr('disabled');
+      }
+      else {
+        user.showLogin();
+      }
+    }) 
+    e.preventDefault();
+  });
+  
+  $('#register-firstname, #register-lastname').keyup(function() {
+    if($('#register-firstname').val() != '' && $('#register-lastname').val() != '') {
+      $('#submit-register').removeAttr('disabled');
+    }
+    else {
+      $('#submit-register').attr('disabled','disabled');
+    }
+  });
+  
+  $('#submit-register').click(function() {
+    $('#submit-register-button').trigger('click');
+  });
+  
+  $('#register-form').submit(function(e) {
+    e.preventDefault();
+    $('#submit-register').text('Sending').attr('disabled','disabled')
+    user.setProfile({
+      firstname: $('#register-firstname').val(),
+      lastname: $('#register-lastname').val(),
+      active: true
+    },
+    function(resp) {
+      $('#submit-register').text('Submit').removeAttr('disabled');
+      user.hideRegister(true);
+    }) 
+  });
+})
+
 window.onmessage = function(event) {
   if(event.origin == 'http://localhost') {
     if(event.data.status == true) {

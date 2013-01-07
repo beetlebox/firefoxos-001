@@ -49,7 +49,7 @@ this.api = (function() {
           callback(resp.results);
         } 
       }
-    }) 
+    }, 'json'); 
   }
   
   function exchangeToken(token,token_exchange,callback) {
