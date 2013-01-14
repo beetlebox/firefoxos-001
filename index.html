@@ -16,9 +16,6 @@
 		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script type="application/javascript" src="js/zepto.min.js"></script>
 		<script type="application/javascript" src="js/navigation.js"></script>
-		<script type="application/javascript">
-		  var navigation = new navigationStack('view-events-list'); 
-    </script>
 		<script type="application/javascript" src="js/plugins.js"></script>
 		<script type="application/javascript" src="js/api.js"></script> 		
 		<script type="application/javascript" src="js/model.js"></script>
@@ -40,28 +37,17 @@
           	  <header>
           	    <menu type="toolbar">
           	      <button role="menuitem" id="add-event-button"><span class="icon icon-add">add</span></button>
-                  <button role="menuitem" id="profile-button"><span class="icon icon-user">profile</span></button>
                 </menu>
                 <h1>Events</h1>
               </header>
             
               <article class="body">
                 <div class="inner">
+									<p id="view-event-list-status" class="" role="status">
+										<progress class="small"></progress>
+										Synchronizing ...
+									</p>
                   <section data-type="list">
-                    <div id="template-event-list" data-template>
-                      <header></header>
-                      <ul>
-                        <li>
-                          <aside class="pack-end">
-                            <img alt="placeholder" src="">
-                          </aside>
-                          <a href="#">
-                            <p class="title"></p>
-                            <p class="location"></p>
-                          </a>
-                        </li>
-                      </ul>
-                    </div> 
                   </section>
                 </div> 
               </article> 
@@ -214,7 +200,7 @@
 						    </form>
 								<div id="map-canvas"></div>
 							</article>
-						</section> 
+						</section>
 					</div>
   	    </li>
 

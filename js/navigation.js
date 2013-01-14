@@ -163,3 +163,5 @@ function navigationStack(currentView) {
   }; 
 
 }
+
+var navigation = new navigationStack('view-events-list');
