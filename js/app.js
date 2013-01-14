@@ -13,7 +13,7 @@ $(function() {
   }
   
   $(window).on('event', function() {
-
+    events.list()
   });
   
   $(window).on('event-detail', function() {
