@@ -5,27 +5,26 @@ this.events = (function() {
   function list() {
     model.count('event',function(c) {
       if(c > 0) {
-        model.list('event',20,0,function(data) {
-          if(data) {
-            show_list_grouping(data);
-          }
-          
-          if(window.navigator.onLine) {
-            api.items('', function(data) {
-              if(data) {
-                show_list_grouping(data);
-                add(data);
-              }
-            });
-          }
-        })
+        showList();
+        
+        if(window.navigator.onLine) {
+          $('#view-event-list-status').show();
+          api.items('', function(data) {
+            if(data) {
+              add(data);
+              clearList();
+              //showList();
+              $('#view-event-list-status').hide();                
+            }
+          });
+        } 
       }
       else {
         if(window.navigator.onLine) {
           api.items('', function(data) {           
             if(data) {
-              show_list_grouping(data);
               add(data);
+              showList();               
             }
           });
         }
@@ -33,7 +32,20 @@ this.events = (function() {
           alert('Offline!');
         }
       }
-    })
+    });
+  }
+  
+  function showList() {
+    console.log('list');
+    model.list('event',20,0,function(data) {
+      if(data) {
+        data.sort(function(a,b) {
+          return a.start > b.start; 
+        });
+        
+        show_list_grouping(data);
+      }
+    });    
   }
   
   function add(data) {
@@ -52,11 +64,12 @@ this.events = (function() {
   
     $.each(data, function() {
       var group = groupingdate(this.start);
-      var groupid = group.toLowerCase().replace(' ','');  
+      var groupid = group.order;  
       
       if($('#'+groupid).length == 0) {
-        $('<header />', {text: group}).appendTo('#view-events-list section[data-type="list"]');
-        $('<ul />', {id: groupid}).appendTo('#view-events-list section[data-type="list"]');
+        var header = $('<header />', {text: group.text})
+        var ul = $('<ul />');
+        $('#view-events-list section[data-type="list"]').append(header).append(ul).wrapInner('<div id="'+groupid+'" />');
       }
       
       var img = $('<img />', {'src' : this.banner, 'alt': 'placeholder'}).wrap('<aside />').parent().addClass('pack-end');
@@ -72,8 +85,6 @@ this.events = (function() {
         if(data) {
           model.set(this);
         }
-        
-        
       })
     }
   }
@@ -92,53 +103,61 @@ this.events = (function() {
     var lastdate = firstdate + 6;
     
     var diff = time - now; 
-    var daydiff = firstdate - itemdate;
+    var daydiff = Math.abs(firstdate - itemdate);
     
-    
+
     if(diff <= 86400) {
-      return 'Today';
+      return {order: 1, text: 'Today'}
     }                
     else if(diff > 86400 && diff <= (86400*2)) {
-      return 'Tomorrow';
+      return {order: 2, text: 'Tomorrow'}
     }
     else if(diff >= (86400*3) && diff <= (86400*daydiff)) {
-      return 'This Week';
+      return {order: 3, text: 'This Week'}
     }
-    else if(daydiff < -8 && (tdate.getFullYear() <= date.getFullYear())) {
-      return months[tdate.getMonth()];
+    else if(tdate.getFullYear() <= date.getFullYear()) {
+      return {order: (tdate.getMonth() + 4), text: months[tdate.getMonth()]}
     }
     else {
-      return 'Next Year';
+      return {order: 17, text: 'Next Year'}
     }
+  }
+  
+  function clearList() {
+    console.log('clear');
+    $('#view-events-list [data-type="list"] *').each(function() {
+      $(this).remove();
+    })
   }
   
   return {
     list: list,
     add: add,
-    clearAllForm: clearAllForm
+    clearAllForm: clearAllForm,
+    clearList: clearList
   }; 
 }());
 
 
-$('#add-event-button').click(function() {
-  user.checkLogin(function(status) {
-    if(status == 'ok') {
-      navigation.go('view-event-add','popup');        
-    }
-    else if(status == 'no_name') {
-      user.showRegister(function() {
-        navigation.go('view-event-add','popup');
-      })
-    }
-    else {
-      user.showLogin(function() {
-        navigation.go('view-event-add','popup');
-      });
-    }
-  })
-});
-
 $(function() {
+  $('#add-event-button').click(function() {
+    user.checkLogin(function(status) {
+      if(status == 'ok') {
+        navigation.go('view-event-add','popup');        
+      }
+      else if(status == 'no_name') {
+        user.showRegister(function() {
+          navigation.go('view-event-add','popup');
+        })
+      }
+      else {
+        user.showLogin(function() {
+          navigation.go('view-event-add','popup');
+        });
+      }
+    })
+  });
+  
   $('#location-name').click(function(e) {
     if($('#venuename').val() && $('#venueaddress').val()) {
       navigation.go('view-event-add-location','popup');
@@ -222,25 +241,25 @@ $(function() {
       }   
     })
   });
-  
+
   $('#search-location-text').keyup($.debounce( function() {
     if($(this).val() == '') return false;
-     
+
     $('#search-location-result').find('p.no-result').hide();       
     $('#search-location-result').find('p.loading').show();
-         
+
     api.venuesearch($(this).val(), function(data) {
       $('#search-location-result li:not([data-template])').each(function() {
         $(this).remove();
       });
-      
+
       $('#search-location-result').find('p.loading').hide();
-      
+
       if(data == false) {
         $('#search-location-result').find('p.no-result').show();
         return false;
       } 
-            
+
       var template = $('#search-location-result').find('[data-template]');
 
       $.each(data, function() {
@@ -252,7 +271,7 @@ $(function() {
       })
     });
   }, 500));
-  
+
   $(document).on('click','.select-venue',function(e) {
     $('#venueid').val($(this).attr('data-id'));
     $('#location-name').text($(this).attr('data-name'));
@@ -263,16 +282,16 @@ $(function() {
     });
     e.preventDefault();
   });
-  
+
   $('#add-location-link').click(function() {
     navigation.back();
     navigation.go('view-event-add-location','popup');
   });
-  
+
   $('#submit-add-location').click(function() {
     $('#submit-add-location-button').trigger('click');
   })
-  
+
   $('#add-location-form').submit(function(e) {
     e.preventDefault();
     $('#venuename,#location-name-hidden').val($('#add-location-name').val());
@@ -281,6 +300,7 @@ $(function() {
     navigation.back(function() {
       $('#location-name-hidden').trigger('keyup');
     });
-  })  
+  })    
 })
+
 
