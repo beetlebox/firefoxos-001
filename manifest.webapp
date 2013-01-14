@@ -3,7 +3,8 @@
   "name": "Project E",
   "package_path": "http://localhost/firefoxos/projecte/install/projecte.zip",
   "size" : 3067102,
-  "description": "Project E",
+  "relase_notes": "Test Release",
+  "launch_path" : "/index.html",
   "icons": {
     "16": "/img/icons/mortar-16.png",
     "48": "/img/icons/mortar-48.png",
@@ -12,7 +13,5 @@
   "developer": {
     "name": "Beetlebox",
     "url": "http://www.beetlebox.co.id"
-  },
-  "installs_allowed_from": ["*"],
-  "default_locale": "en"
+  }
 }
