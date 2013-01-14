@@ -67,7 +67,7 @@ p[role="status"] {
 .view {
   .body {
     position: relative;
-    height: calc(100% - 9rem);
+    height: calc(100% - 5rem);
     
     .inner {
       overflow-y: auto;
@@ -156,8 +156,11 @@ form {
     margin: 0 auto;
     display: block;
   }
-} 
+}
 
+#view-event-list-status {
+  margin:5px 0;
+}
 
 /* View Transition */
 .transition {
@@ -166,4 +169,8 @@ form {
 
 .transition-bottom {
   -moz-transform: translateY(100%);
+}
+
+.transition-top {
+  -moz-transform: translateY(-100%);
 }

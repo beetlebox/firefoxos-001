@@ -50,7 +50,7 @@ p[role="status"] {
 
 .view .body {
   position: relative;
-  height: calc(100% - 9rem); }
+  height: calc(100% - 5rem); }
   .view .body .inner {
     overflow-y: auto;
     overflow-x: none;
@@ -109,9 +109,15 @@ form fieldset {
   margin: 0 auto;
   display: block; }
 
+#view-event-list-status {
+  margin: 5px 0; }
+
 /* View Transition */
 .transition {
   -moz-transition: all 0.5s ease; }
 
 .transition-bottom {
   -moz-transform: translateY(100%); }
+
+.transition-top {
+  -moz-transform: translateY(-100%); }
