@@ -3,6 +3,8 @@
 Refactor from Contact Navigation Gaia
 */
 
+'use strict';
+
 function navigationStack(currentView) {
   var transitions = {
     'left-right': { from: 'transition-left', to: 'transition-right'},
@@ -40,19 +42,16 @@ function navigationStack(currentView) {
     var currentMirror = document.getElementById(current.dataset.mirror);
     var nextMirror = document.getElementById(next.dataset.mirror);
     var move = transitions[transition] || transition;
-
-    cache.dataset.state = 'active';
+    
     clearTimeout(transitionTimeout);
     transitionTimeout = setTimeout(function animate() {
-      currentMirror.classList.add(move.to);
-      nextMirror.classList.remove(move.from);
+      current.classList.add(move.to);
+      next.classList.remove(move.from);
     }, 1);
 
-    nextMirror.addEventListener('transitionend', function nocache() {
+    next.addEventListener('transitionend', function nocache() {
       setAppView(current, next);
-      app.dataset.state = 'active';
-      cache.dataset.state = 'inactive';
-      nextMirror.removeEventListener('transitionend', nocache);
+      next.removeEventListener('transitionend', nocache);
       current.classList.remove('transitioning');
       next.classList.remove('transitioning');
       if (typeof callback === 'function') {
@@ -164,4 +163,12 @@ function navigationStack(currentView) {
 
 }
 
-var navigation = new navigationStack('view-events-list');
+var navigation;
+
+var sendMsg = function(msg) {
+  window.postMessage(JSON.stringify(msg),'*');
+}
+
+window.onload = function() {
+  navigation = new navigationStack('view-events-list');  
+}
