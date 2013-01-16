@@ -3,7 +3,7 @@
 $(function() {
   var path = window.location.href;
   var hash = window.location.hash; 
-
+  
   if(hash == '') {
     window.location.href = path + '#event';
   }
@@ -13,15 +13,34 @@ $(function() {
   }
   
   $(window).on('event', function() {
-    events.list()
+    events.list();
   });
   
-  $(window).on('event-detail', function() {
-    
+  $(window).on('search', function() {
+ 
   })
   
   $(window).on('profile', function() {
-    user.getProfile();
-  }); 
+    user.showProfile();
+  });                      
   
+  
+  // get message
+  // window.addEventListener('message',function(e) {
+  //   var data = JSON.parse(e.data); 
+  // 
+  //   switch(data.action) {
+  //     case 'event-list':
+  //       events.list();
+  //       break;
+  //     case 'event-detail':
+  //       events.detail(data.param.id);
+  //       break;
+  //     case 'user-profile':
+  //       user.getProfile();
+  //       break;
+  //     default:
+  //       alert('error');
+  //   }
+  // });
 })
