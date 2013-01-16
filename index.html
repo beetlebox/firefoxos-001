@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="shared/style_unstable/tabs.css">
     <link rel="stylesheet" href="shared/style/input_areas.css">
     <link rel="stylesheet" href="shared/style_unstable/progress_activity.css">
-    <link rel="stylesheet" href="shared/style/buttons.css"> 
+    <link rel="stylesheet" href="shared/style/buttons.css">
+		<link rel="stylesheet" href="shared/style/switches.css"> 
 		<link rel="stylesheet" href="style/fonts.css">
 		<link rel="stylesheet" href="style/icons.css">
     <link rel="stylesheet" href="style/app.css">
@@ -25,7 +26,8 @@
     <script type="application/javascript" src="js/app.js"></script>
     <script type="application/javascript" src="js/form.js"></script>  
   </head>
-  <body role="application">
+  
+	<body role="application">
     <div id="app" class="view">
   	  <ul role="tablist" data-items="3" class="bottom">
         <!-- Event -->
@@ -33,10 +35,10 @@
   	      <a href="#event" class="icon icon-signal"></a>
   	      <div role="tabpanel">
   	        <!-- List Section -->
-          	<section id="view-events-list" role="region" class="view section" data-state="active" data-mirror="mirror-events-list">
+          	<section id="view-events-list" role="region" class="view section transition" data-state="active" data-mirror="mirror-events-list">
           	  <header>
           	    <menu type="toolbar">
-          	      <button role="menuitem" id="add-event-button"><span class="icon icon-add">add</span></button>
+          	      <button role="menuitem" class="add-event-button" id="add-event-button"><span class="icon icon-add">add</span></button>
                 </menu>
                 <h1>Events</h1>
               </header>
@@ -52,6 +54,47 @@
                 </div> 
               </article> 
   					</section>
+						
+						<!-- Detail Section -->
+						<section id="view-event-detail" role="region" class="view section transition transition-right" data-mirror="mirror-event-detail">
+							<header>
+								<button id="back-event-detail" class="cancel-navigation negative"><span class="icon icon-back">Back</span></button>
+								<menu type="toolbar"><button role="menuitem" class="add-event-button" id="add-event-button-detail"><span class="icon icon-add">add</span></button></menu>
+								<h1>Event Detail</h1> 								
+							</header>
+							
+							<article class="body padding">
+								<div class="inner">
+									<section>
+										<div id="detail-banner">
+											<img src="">
+										</div>
+										<div id="detail-meta">
+											<div class="meta-box clearfix">
+												<div class="title left">
+													<h1></h1>
+													<span></span>
+												</div>
+												<img id="detail-avatar" class="right" src="" alt="placeholder">
+											</div>
+											<div class="meta-box clearfix">
+												<span class="left attend-text">I will attend this event!</span>
+												<label class="right">
+													<input type="checkbox" id="detail-attend" data-type="switch">
+													<span></span>
+												</label>
+											</div>
+											<div class="meta-box">
+												<span class="time day"></span>
+												<span class="time date"></span>
+												<span class="time hour"></span>
+											</div>
+										</div>                           
+										<p id="detail-description"></p>
+									</section>
+								</div>
+							</article>
+					 	</section>
 					
  				    <!-- Add Section -->
             <section id="view-event-add" role="region" class="view transition transition-bottom" data-mirror="mirror-event-add">
@@ -302,7 +345,8 @@
 			<div id="mirror-login" class="view" style="background-image: -moz-element(#view-login);"></div>
 			<div id="mirror-register" class="view" style="background-image: -moz-element(#view-register);"></div>
 			<div id="mirror-event-search-location" class="view" style="background-image: -moz-element(#view-event-search-location);"></div>
-			<div id="mirror-event-add-location" class="view" style="background-image: -moz-element(#view-event-add-location);"></div> 
+			<div id="mirror-event-add-location" class="view" style="background-image: -moz-element(#view-event-add-location);"></div>
+			<div id="mirror-event-detail" class="view" style="background-image: -moz-element(#view-event-detail);"></div> 
 	  </div>
 
   </body>
