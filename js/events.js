@@ -9,14 +9,16 @@ this.events = (function() {
         
         if(window.navigator.onLine) {
           $('#view-event-list-status').show();
-          api.items('', function(data) {
-            if(data) {
-              add(data);
-              clearList();
-              //showList();
-              $('#view-event-list-status').hide();                
-            }
-          });
+          user.getToken(function(token) {
+            api.items('',token, function(data) {
+              if(data) {
+                add(data);
+                //clearList();
+                //showList();
+                $('#view-event-list-status').hide();                
+              }
+            });            
+          }) 
         } 
       }
       else {
@@ -36,7 +38,6 @@ this.events = (function() {
   }
   
   function showList() {
-    console.log('list');
     model.list('event',20,0,function(data) {
       if(data) {
         data.sort(function(a,b) {
@@ -66,27 +67,71 @@ this.events = (function() {
       var group = groupingdate(this.start);
       var groupid = group.order;  
       
-      if($('#'+groupid).length == 0) {
+      if($('#group-'+groupid).length == 0) {
         var header = $('<header />', {text: group.text})
         var ul = $('<ul />');
-        $('#view-events-list section[data-type="list"]').append(header).append(ul).wrapInner('<div id="'+groupid+'" />');
+        $('#view-events-list section[data-type="list"]').append(header).append(ul).wrapInner('<div id="group-'+groupid+'" />');
       }
       
-      var img = $('<img />', {'src' : this.banner, 'alt': 'placeholder'}).wrap('<aside />').parent().addClass('pack-end');
-      var link = $('<p />', {text: this.title, class: 'title'}); 
-      var loc = $('<p />', {text: this.venue.name, class: 'location'});
-      $('<li />').append(img).append(link).append(loc).wrapInner('<a href="#event-detail" data-eventid="'+this.id+'" />').appendTo('#'+groupid);
+      if($('#event-'+this.id).length == 0) {
+        var img = $('<img />', {'src' : this.banner, 'alt': 'placeholder'}).wrap('<aside />').parent().addClass('pack-end');
+        var link = $('<p />', {text: this.title, class: 'title'}); 
+        var loc = $('<p />', {text: this.venue.name, class: 'location'});
+        $('<li id="event-'+this.id+'" />').append(img).append(link).append(loc).wrapInner('<a href="#event" data-eventid="'+this.id+'" />').appendTo('#group-'+groupid);
+      }
     })
   }
   
   function detail(id) {
-    if(window.navigator.onLine) {
-      api.detail(id, function(data) {
-        if(data) {
-          model.set(this);
-        }
-      })
+    model.get(id,'event',function(datadb) {
+      navigation.go('view-event-detail','right-left');
+      $('#view-event-detail').attr('data-eventid',id);
+      
+      if(datadb.description) {
+        showdetail(datadb,'db');       
+      }
+
+      if(window.navigator.onLine) {
+        user.getToken(function(token) {
+          api.detail(id,token, function(data) {
+            if(data) {
+              showdetail(data,'api');
+              model.set(data,'event');
+            }
+            else {
+              datadb.description = 'Error when updating content. Please try again';
+              showdetail(datadb,'db');
+            }
+          })          
+        })
+      }
+      else {
+        datadb.description = 'Network error. Cannot updating content.';
+        showdetail(datadb,'db');
+      }      
+    })
+  }
+  
+  function showdetail(data,type) {
+    var start = moment(data.start*1000);
+    var end = moment(data.end*1000);
+    
+    $('#detail-meta .title h1').text(data.title);
+    $('#detail-meta .title span').text(data.venue.name);
+    $('#detail-meta .time.day').text(start.format('dddd'));
+    $('#detail-meta .time.date').text(start.format('MMMM Do YYYY'));
+    $('#detail-meta .time.hour').text(start.format('ha')+' - '+end.format('ha'));
+    
+    $('#detail-avatar').attr('src',data.author.avatar);
+    
+    $('#detail-description').text(data.description);
+    
+    if(data.is_attend) {
+      $('#detail-meta input[type="checkbox"]').attr('checked','checked');
     }
+    else {
+      $('#detail-meta input[type="checkbox"]').removeAttr('checked');
+    }      
   }
   
   function groupingdate(time) {
@@ -130,17 +175,40 @@ this.events = (function() {
     })
   }
   
+  function setAttend(token,eid,type,callback) {    
+    api.setAttend(token,eid,type,function(ret) {
+      if(ret) {
+        var set = {};
+        set.is_attend = type == 'attend' ? true : false; 
+        model.get(eid,'event',function(datadb) {
+          setdb = $.extend(datadb,set);
+          model.set(setdb,'event');
+        });
+        if($.isFunction(callback)) {
+          callback(ret);
+        }      
+      }
+      else {
+        if($.isFunction(callback)) {
+          callback(ret);
+        }
+      }    
+    });
+  }
+  
   return {
     list: list,
     add: add,
+    detail: detail,
     clearAllForm: clearAllForm,
-    clearList: clearList
+    clearList: clearList,
+    setAttend: setAttend
   }; 
 }());
 
 
 $(function() {
-  $('#add-event-button').click(function() {
+  $('.add-event-button').click(function() {
     user.checkLogin(function(status) {
       if(status == 'ok') {
         navigation.go('view-event-add','popup');        
@@ -300,7 +368,26 @@ $(function() {
     navigation.back(function() {
       $('#location-name-hidden').trigger('keyup');
     });
-  })    
+  });
+  
+  
+  $(document).on('click','#view-events-list a', function(e) {
+    events.detail($(this).attr('data-eventid'));
+    e.preventDefault();
+  });
+  
+  $('#detail-attend').click(function() {
+    var type = $(this).is(':checked') ? 'attend' : 'unattend';
+    
+    user.setAttend($('#view-event-detail').attr('data-eventid'),type,function() {
+      if(type == 'attend') {
+        $('#detail-attend').attr('checked');
+      }                                     
+      else {
+        $('#detail-attend').removeAttr('checked');
+      }
+    })
+  })   
 })
 
 

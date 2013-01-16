@@ -155,7 +155,7 @@ this.user = (function() {
     })
   }
   
-  function getProfile() {
+  function showProfile() {
     model.get(1,'user',function(data) {
       if(data.firstname && data.lastname) {
         $('#firstname').val(data.firstname);
@@ -166,6 +166,57 @@ this.user = (function() {
       $('#bio').val(data.bio);
     })
   }
+  
+  function getProfile(callback) {
+    model.get(1,'user',function(data) {
+      callback(data);
+    })
+  }
+  
+  function getToken(callback) {
+    checkLogin(function(cek){
+      if(cek == 'ok') {
+        model.get(1,'user',function(data) {
+          if($.isFunction(callback)) {
+            callback(data.token);            
+          }
+        })
+      }
+      else {
+        callback('');
+      }
+    });
+  }
+  
+  function setAttend(eid,type,callback) {
+    checkLogin(function(cek){
+      if(cek == 'ok') {
+        user.getToken(function(token) {
+          events.setAttend(token,eid,type,function(ret) {
+            callback(ret);
+          });
+        })
+      }
+      else if(status == 'no_name') {
+        user.showRegister(function() {
+          user.getToken(function(token) {
+            events.setAttend(token,eid,type,function(ret) {
+              callback(ret);
+            });
+          })        
+        })
+      }
+      else {
+        user.showLogin(function() {
+          user.getToken(function(token) {
+            events.setAttend(token,eid,type,function(ret) {
+              callback(ret);
+            });
+          })
+        });
+      }
+    });    
+  } 
    
   return {
     checkLogin: checkLogin,
@@ -175,7 +226,10 @@ this.user = (function() {
     showRegister: showRegister,
     hideRegister: hideRegister,
     setProfile: setProfile,
-    getProfile: getProfile
+    getProfile: getProfile,
+    getToken: getToken,
+    showProfile: showProfile,
+    setAttend: setAttend
   };
 }());
 
