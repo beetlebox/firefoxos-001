@@ -23,11 +23,15 @@ this.events = (function() {
       }
       else {
         if(window.navigator.onLine) {
-          api.items('', function(data) {           
-            if(data) {
-              add(data);
-              showList();               
-            }
+          $('#view-event-list-status').show();
+          user.getToken(function(token) {
+            api.items('', token, function(data) {           
+              if(data) {
+                add(data);
+                showList();
+                $('#view-event-list-status').hide();               
+              }
+            });
           });
         }
         else {
@@ -125,6 +129,8 @@ this.events = (function() {
     $('#detail-avatar').attr('src',data.author.avatar);
     
     $('#detail-description').text(data.description);
+    
+    console.log(data.is_attend);
     
     if(data.is_attend) {
       $('#detail-meta input[type="checkbox"]').attr('checked','checked');
@@ -379,12 +385,22 @@ $(function() {
   $('#detail-attend').click(function() {
     var type = $(this).is(':checked') ? 'attend' : 'unattend';
     
-    user.setAttend($('#view-event-detail').attr('data-eventid'),type,function() {
+    user.setAttend($('#view-event-detail').attr('data-eventid'),type,function(ret) {
       if(type == 'attend') {
-        $('#detail-attend').attr('checked');
+        if(ret) {
+          $('#detail-attend').attr('checked','checked');
+        }
+        else {
+          $('#detail-attend').removeAttr('checked');
+        }
       }                                     
       else {
-        $('#detail-attend').removeAttr('checked');
+        if(ret) {
+          $('#detail-attend').removeAttr('checked');          
+        }
+        else {
+          $('#detail-attend').attr('checked','checked');         
+        }
       }
     })
   })   
