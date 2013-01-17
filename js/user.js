@@ -183,7 +183,9 @@ this.user = (function() {
         })
       }
       else {
-        callback('');
+        if($.isFunction(callback)) {
+          callback('');            
+        }
       }
     });
   }
