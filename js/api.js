@@ -15,7 +15,7 @@ this.api = (function() {
     //     callback(false);           
     //   }      
     // })
-    
+
     $.ajax({
       url: APIURL+'event/list/?limit=10&token='+token,
       dataType:'json',
@@ -165,7 +165,7 @@ this.api = (function() {
   }
   
   function setAttend(token,eid,type,callback) {
-    var url = type == 'attend' ? APIURL+'user/attend' : APIURL+'user/unattend';
+    var url = type == 'attend' ? APIURL+'user/setattend' : APIURL+'user/setunattend';
     
     data = {
       eid : eid,
@@ -176,6 +176,7 @@ this.api = (function() {
       mozSystem: true
     });
     xhr.open('POST', url, true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.onload = function() {
       if(xhr.readyState == 200) {
         if($.isFunction(callback)) {
