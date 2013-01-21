@@ -1,10 +1,8 @@
 {
   "version": "0.1",
   "name": "Project E",
-  "package_path": "http://beetlebox.github.com/firefoxos-001/projecte.zip",
-  "size" : 3067102,
-  "relase_notes": "Test Release",
   "launch_path" : "/index.html",
+	"description": "Test Description",
   "icons": {
     "16": "/img/icons/mortar-16.png",
     "48": "/img/icons/mortar-48.png",
